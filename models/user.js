@@ -1,6 +1,7 @@
 'use strict';
 
-const thinky = require('thinky')();
+const config = require('../modules/config');
+const thinky = require('thinky')(config.database);
 const r = thinky.r;
 const type = thinky.type;
 
