@@ -111,7 +111,7 @@ gulp.task('start', () => {
       'server/public/'
     ],
     env: {
-      'DEBUG': '*,-express:*'
+      'DEBUG': '*,-express:*,-connect:*'
     },
     // nodeArgs: ['--debug']
   }).on('crash', () => {
