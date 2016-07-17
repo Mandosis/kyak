@@ -1,6 +1,7 @@
 'use strict';
 
 const bcrypt = require('bcrypt');
+const _ = require('lodash');
 const debug = require('debug')('user');
 const error = require('debug')('user:error');
 const config = require('../modules/config');
@@ -23,11 +24,11 @@ User.define('isModified', function (key, cb) {
   let user = this;
 
 
-  User.get({ id: user.id }).run()
+  User.filter({ id: user.id }).run()
     .then((result) => {
-      if (result == {}) {
+      if (_.isEmpty(result)) {
         cb(false);
-      } else if (user[key] === result[key]) {
+      } else if (user[key] === result[0][key]) {
         cb(true);
       } else {
         cb(false);
