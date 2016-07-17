@@ -1,7 +1,11 @@
 'use strict';
 
+const bcrypt = require('bcrypt');
+const debug = require('debug')('user');
+const error = require('debug')('user:error');
 const config = require('../modules/config');
-const thinky = require('thinky')(config.database);
+const thinky = require('../modules/thinky');
+
 const r = thinky.r;
 const type = thinky.type;
 
@@ -11,34 +15,73 @@ let User = thinky.createModel("User", {
   id: type.string().default(r.uuid()),
   username: type.string(),
   password: type.string(),
-  email: type.string.email()
+  email: type.string().email()
+});
+
+// Check if the value was modified
+User.define('isModified', function (key, cb) {
+  let user = this;
+
+
+  User.get({ id: user.id }).run()
+    .then((result) => {
+      if (result == {}) {
+        cb(false);
+      } else if (user[key] === result[key]) {
+        cb(true);
+      } else {
+        cb(false);
+      }
+    })
+
+    // Reject with error message
+    .error((err) => {
+      cb(error);
+    });
+});
+
+// Compare passwords during authentication
+User.define('comparePassword', (candidatePassword, done) => {
+  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+    if (err) {
+      return done(err);
+    } else {
+      done(null, isMatch);
+    }
+  });
 });
 
 // Encrypt password on save
-User.pre('save', (next) => {
+User.pre('save', function (next) {
   let user = this;
 
-  if (user.isModified('password')) {
-    return next();
-  }
+  // if (user.isModified('password')) {
+  //   return next();
+  // }
 
-  // Create salt for hash
-  bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-    if (err) {
-      return next(err);
+  user.isModified('password', (result) => {
+    if (result) {
+      return next();
+    } else {
+      // Create salt for hash
+      bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+        if (err) {
+          return next(err);
+        }
+
+        bcrypt.hash(user.password, salt, function(err, hash) {
+          if (err) {
+            return next(err);
+          }
+
+          // Replace clear text with hashed password
+          user.password = hash;
+
+          next();
+        });
+      });
     }
-
-    bcrypt.hash(user.password, salt, function(err, hash) {
-      if (err) {
-        return next(err);
-      }
-
-      // Replace clear text with hashed password
-      user.password = hash;
-
-      next();
-    });
-  });
+  })
 });
 
 module.exports = User;
