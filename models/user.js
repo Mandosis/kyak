@@ -12,10 +12,10 @@ const type = thinky.type;
 const SALT_WORK_FACTOR = 10;
 
 let User = thinky.createModel("User", {
-  id: type.string().default(r.uuid()),
-  username: type.string(),
-  password: type.string(),
-  email: type.string().email()
+  id: type.string(),
+  username: type.string().required(),
+  password: type.string().required(),
+  email: type.string().email().required()
 });
 
 // Check if the value was modified
@@ -54,10 +54,6 @@ User.define('comparePassword', (candidatePassword, done) => {
 // Encrypt password on save
 User.pre('save', function (next) {
   let user = this;
-
-  // if (user.isModified('password')) {
-  //   return next();
-  // }
 
   user.isModified('password', (result) => {
     if (result) {
