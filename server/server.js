@@ -3,13 +3,39 @@
 require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const debug = require('debug')('server');
-const error = require('debug')('server:error');
+const winston = require('winston');
 const config = require('../modules/config');
 const router = require('./routes/router');
+const database = require('./database');
 
 let app = express();
+
+/*
+ * Configure winston
+ */
+winston.addColors({
+  debug: 'green',
+  info: 'cyan',
+  silly: 'magenta',
+  warn:  'yellow',
+  error: 'red'
+});
+winston.remove(winston.transports.Console);
+winston.add(winston.transports.Console, {
+  level: process.env.LOG_LEVEL,
+  colorize:true
+});
+
+/*
+ * Connect to database
+ */
+database.connect();
+
+/*
+ * Configure Middleware
+ */
 
 // Parse application/x-www-from-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -23,8 +49,10 @@ app.use(helmet());
 // Routes
 app.use('/', router);
 
-// Start a webserver on a port set via config.json or environment variable
+/*
+ * Start a webserver on a port set via config.json or environment variable
+ */
 let server = app.listen(process.env.PORT || config.port, () => {
   let port = server.address().port;
-  debug('listening on port ' + port);
+  winston.info('Listening on port ' + port);
 });

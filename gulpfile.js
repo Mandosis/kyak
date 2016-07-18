@@ -1,13 +1,15 @@
-var gulp = require('gulp');
-var watch = require('gulp-watch');
-var sass = require('gulp-sass');
-var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
-var nodemon = require('gulp-nodemon');
-var notify = require('gulp-notify');
-var rename = require('gulp-rename');
-var moment = require('moment');
-var through = require('through2');
+'use strict';
+
+const gulp = require('gulp');
+const watch = require('gulp-watch');
+const sass = require('gulp-sass');
+const uglify = require('gulp-uglify');
+const concat = require('gulp-concat');
+const nodemon = require('gulp-nodemon');
+const notify = require('gulp-notify');
+const rename = require('gulp-rename');
+const moment = require('moment');
+const through = require('through2');
 
 // gulp.task('copy', () => {
 //
@@ -111,7 +113,7 @@ gulp.task('start', () => {
       'server/public/'
     ],
     env: {
-      'DEBUG': 'server*, config'
+      'LOG_LEVEL': 'debug'
     },
     // nodeArgs: ['--debug']
   }).on('crash', () => {
