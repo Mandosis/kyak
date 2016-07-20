@@ -13,22 +13,6 @@ const database = require('./database');
 let app = express();
 
 /*
- * Configure winston
- */
-winston.addColors({
-  debug: 'green',
-  info: 'cyan',
-  silly: 'magenta',
-  warn:  'yellow',
-  error: 'red'
-});
-winston.remove(winston.transports.Console);
-winston.add(winston.transports.Console, {
-  level: process.env.LOG_LEVEL,
-  colorize:true
-});
-
-/*
  * Connect to database
  */
 database.connect();

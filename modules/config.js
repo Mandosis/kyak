@@ -4,6 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const winston = require('winston');
 
+/*
+ * Configure winston
+ */
 winston.addColors({
   debug: 'green',
   info: 'cyan',

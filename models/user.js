@@ -19,7 +19,9 @@ let userSchema = new Schema({
   }
 });
 
-// Encrypt password before saving to the database
+/*
+ * Encrypt password before saving to the database
+ */
 userSchema.pre('save', function(next) {
   let user = this;
 
@@ -47,7 +49,9 @@ userSchema.pre('save', function(next) {
   });
 });
 
-// Compare the provided password against the database
+/*
+ * Compare the provided password against the database
+ */
 userSchema.methods.comparePassword = function(candidatePassword, done) {
   bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
     if (err) {
